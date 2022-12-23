@@ -4,7 +4,23 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 module.exports.register = (req, res, next) => {
-  // TODO : Manager requires admin approve 
+  // Check if the username is already exist
+  User.findOne({ userName: req.body.userName }).then(foundUser => {
+    console.log(foundUser);
+    foundUser && res.status(400).json({
+      message: 'Username is already exist.'
+    });
+  });
+  // Check if the email is already exist
+  User.findOne({ emailAddress: req.body.emailAddress }).then(foundUser => {
+    if (foundUser) {
+      res.status(400).json({
+        message: 'Email is already exist.'
+      });
+    }
+  });
+  // Hash the password
+  let user;
   bcrypt.hash(req.body.password, 12)
     .then(hashedPassword => {
       const newUser = new User({
@@ -21,6 +37,7 @@ module.exports.register = (req, res, next) => {
           savedUser
         });
       } else {
+        user = savedUser;
         // Generate the JWT token
         const token = jwt.sign(
           {

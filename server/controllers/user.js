@@ -38,8 +38,15 @@ module.exports.getUsers = async (req, res) => {
 };
 
 module.exports.approveManager = async (req, res) => {
+  // Check if the manager is already exist in the database
+  const foundManager = await User.findById(req.params.id);
+  if (!foundManager) {
+    res.status(400).json({
+      message: 'Manager is not exist.'
+    });
+  }
   try {
-    const approvedManger = await User.findByIdAndUpdate(req.params.id, {
+    const approvedManager = await User.findByIdAndUpdate(req.params.id, {
       $set: {
         approved: true
       }
@@ -48,7 +55,7 @@ module.exports.approveManager = async (req, res) => {
     });
     res.status(200).json({
       message: 'Manager is approved successfully!',
-      manager: approvedManger
+      manager: approvedManager
     });
   } catch (error) {
     res.status(500).json(error);
