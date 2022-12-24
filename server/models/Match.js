@@ -16,9 +16,8 @@ const matchSchema = new Schema(
       type: String,
       required: true
     },
-    seatsStatus: {
-      type: Array, // 2D array of 0s and 1s to represent the reserved seats of the stadium.
-      required: true,
+    seatsStatus: { // Can be derived from the stadium.
+      type: Array, // 2D array (rows x seats per row) initialized with 0's.
     },
     date: {
       type: Date,

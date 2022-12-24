@@ -7,6 +7,7 @@ const stadiumSchema = new Schema(
     name: {
       type: String,
       required: true,
+      unique: true
     },
     rows: {
       type: Number,
