@@ -55,12 +55,18 @@ module.exports.reserveSeat = async (req, res) => {
     const { row, seat } = req.query;
     const match = await Match.findById(req.params.id);
     if (match.seatsStatus[row][seat] === 0) {
+      // assign it to date in days
+      // match.seatsStatus[row][seat] = 1;
+      let date_ob = new Date();
+      let days = date_ob.getDate();
+      // console.log(days);
       // Generate the ticket number
-      match.seatsStatus[row][seat] = 1; // new Date().getUTCMilliseconds();
-      console.log(match.seatsStatus[row][seat]);
+      match.seatsStatus[row][seat] = days; // new Date().getUTCMilliseconds();
+      match.markModified('seatsStatus');
+      // console.log(match.seatsStatus[row][seat]);
       await match.save(); // TODO Match is not saved in the database.
-      console.log(match.seatsStatus[row][seat]);
-      console.log(match);
+      // console.log(match.seatsStatus[row][seat]);
+      // console.log(match);
       return res.status(200).json({ message: 'Seat is reserved successfully.', ticketNumber: match.seatsStatus[row][seat] });
     } else {
       return res.status(400).json({ message: 'Seat is already reserved.' });
@@ -75,13 +81,25 @@ module.exports.cancelReservation = async (req, res) => {
   try {
     const { row, seat } = req.query;
     const match = await Match.findById(req.params.id);
-    console.log(match.seatsStatus[row][seat]);
-    console.log(match);
+    // console.log(match.seatsStatus[row][seat]);
+    // console.log(match);
     if (match.seatsStatus[row][seat] !== 0) {
-      match.seatsStatus[1][1] = 0;
+      // 3 days to cancel the reservation
+      let date_ob = new Date();
+      let days = date_ob.getDate();
+      // console.log(days);
+      let temp = days - match.seatsStatus[row][seat];
+      if(temp < 0){
+        temp+=30;
+      }
+      if (temp > 3) {
+        return res.status(400).json({ message: 'You can not cancel the reservation after 3 days.' });
+      }
+      match.seatsStatus[row][seat] = 0;
+      match.markModified('seatsStatus');
       await match.save();
-      console.log(match.seatsStatus[row][seat]);
-      console.log(match);
+      // console.log(match.seatsStatus[row][seat]);
+      // console.log(match);
       return res.status(200).json({ message: 'Seat is canceled successfully.' });
     } else {
       return res.status(400).json({ message: 'Seat is already not reserved.' });
