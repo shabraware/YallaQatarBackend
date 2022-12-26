@@ -20,3 +20,12 @@ module.exports.addStadium = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+module.exports.getStadiums = async (req, res) => {
+  try {
+    const stadiums = await Stadium.find();
+    res.status(200).json(stadiums);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};

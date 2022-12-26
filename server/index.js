@@ -35,7 +35,6 @@ app.use((req, res) => {
     message: 'Error serving the request!'
   });
 });
-/*
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     const PORT = process.env.PORT || 5000;
@@ -46,10 +45,9 @@ mongoose.connect(process.env.MONGO_URL)
   .catch((error) => {
     console.log(error);
   });
-*/
-mongoose.connect('mongodb://localhost:27017/football')
-  .then(() => console.log('connected successfully'))
-  .catch(err => console.log('could not connect....'));
+// mongoose.connect('mongodb://localhost:27017/football')
+//   .then(() => console.log('connected successfully'))
+//   .catch(err => console.log('could not connect....'));
 
-const port = 5000;
-app.listen(port, () => console.log(`lisening on port ${port}`));
+// const port = 4000;
+// app.listen(port, () => console.log(`lisening on port ${port}`));
