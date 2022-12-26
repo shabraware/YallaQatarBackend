@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+const user = require('../models/User');
+
 // Verify if the token is valid or not ( token is valid if it is not expired and the user is authenticated)
 module.exports.verifyToken = (req, res, next) => {
   const authorization = req.get('Authorization');
@@ -31,10 +33,16 @@ module.exports.verifyTokenAndFan = (req, res, next) => {
 
 module.exports.verifyTokenAndManager = (req, res, next) => {
   this.verifyToken(req, res, () => {
-    if (req.user.role === 'manager' || req.user.id == req.params.id) {
-      next();
+    // Check if the manager is approved or not
+    const manager = user.findById(req.user.id);
+    if (!manager.approved) {
+      res.status(403).json('You are not approved yet.');
     } else {
-      res.status(403).json('Unauthorized access.');
+      if (req.user.role === 'manager' || req.user.id == req.params.id) {
+        next();
+      } else {
+        res.status(403).json('Unauthorized access.');
+      }
     }
   });
 };
