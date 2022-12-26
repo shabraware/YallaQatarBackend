@@ -48,8 +48,8 @@ mongoose.connect(process.env.MONGO_URL)
   });
 */
 mongoose.connect('mongodb://localhost:27017/football')
-        .then(()=>console.log('connected successfully'))
-        .catch(err=>console.log('could not connect....'));
+  .then(() => console.log('connected successfully'))
+  .catch(err => console.log('could not connect....'));
 
-const port = 4000;
+const port = 5000;
 app.listen(port, () => console.log(`lisening on port ${port}`));
