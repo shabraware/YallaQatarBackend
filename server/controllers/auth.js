@@ -21,6 +21,12 @@ module.exports.register = (req, res, next) => {
   });
   // Hash the password
   let user;
+  // validate password
+  if (req.body.password.length < 6) {
+    return res.status(400).json({
+      message: 'Password must be at least 6 characters.'
+    });
+  }
   bcrypt.hash(req.body.password, 12)
     .then(hashedPassword => {
       const newUser = new User({

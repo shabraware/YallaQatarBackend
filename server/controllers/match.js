@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const Match = require('../models/Match');
 const Stadium = require('../models/Stadium');
+const User = require('../models/User');
 
 module.exports.createMatch = async (req, res) => {
   try {
@@ -48,6 +49,7 @@ module.exports.reserveSeat = async (req, res) => {
   try {
     const { row, seat } = req.query;
     const match = await Match.findById(req.params.id);
+    // console.log(match);
     if (match.seatsStatus[row][seat] === 0) {
       // assign it to date in days
       let date_ob = new Date();
@@ -56,6 +58,13 @@ module.exports.reserveSeat = async (req, res) => {
       match.seatsStatus[row][seat] = days;
       match.markModified('seatsStatus');
       await match.save(); // TODO Match is not saved in the database.
+      // save match in the database of the user
+      //console.log(req.user.id);
+      const user = await User.findById(req.user.id);
+      //console.log(user);
+      // update the user's matches array and row and column of the seat
+      user.matches.push({ matches: match._id, row, seat, firstTeam: match.firstTeam, secondTeam: match.secondTeam, matchVenue: match.matchVenue });
+      await user.save();
       return res.status(200).json({ message: 'Seat is reserved successfully.', ticketNumber: match.seatsStatus[row][seat] });
     } else {
       return res.status(400).json({ message: 'Seat is already reserved.' });
@@ -84,6 +93,11 @@ module.exports.cancelReservation = async (req, res) => {
       match.seatsStatus[row][seat] = 0;
       match.markModified('seatsStatus');
       await match.save();
+      // remove match from the database of the user
+      const user = await User.findById(req.user._id);
+      user.matches.pull(match._id);
+      user.markModified('matches');
+      await user.save();
       return res.status(200).json({ message: 'Seat is canceled successfully.' });
     } else {
       return res.status(400).json({ message: 'Seat is already not reserved.' });

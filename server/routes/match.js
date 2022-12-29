@@ -23,4 +23,6 @@ router.get('/:id/seatStatus', verifyToken, getMatchSeatsStatus);
 // GET => /api/matches
 router.get('/', getMatches);
 
+
+
 module.exports = router;

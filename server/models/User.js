@@ -43,6 +43,23 @@ const userSchema = new Schema(
     approved: {
       type: Boolean,
     },
+    // matches with row and column
+    matches: [{
+      match:{
+        type: Schema.Types.ObjectId,
+        ref: 'Match'
+      }, row: {
+        type: Number,
+      }, seat: {
+        type: Number,
+      }, firstTeam: {
+        type: String,
+      }, secondTeam: {
+        type: String,
+      }, matchVenue: {
+        type: String,
+      },
+  }],
   }, {
   timestamps: true
 }

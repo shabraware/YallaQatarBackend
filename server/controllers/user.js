@@ -5,7 +5,13 @@ const User = require('../models/User');
 module.exports.updateUser = async (req, res) => {
   req.body.userName && res.status(400).json({ message: 'You cannot update the userName!' });
   req.body.emailAddress && res.status(400).json({ message: 'You cannot update the emailAddress!' });
+  // validate the password
   if (req.body.password) {
+    if (req.body.password.length < 6) {
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters.'
+      });
+    }
     req.body.password = await bcrypt.hash(req.body.password, 10); // hash the password before saving
   }
   try {
@@ -78,6 +84,16 @@ module.exports.deleteUser = async (req, res) => {
     res.status(200).json({
       message: 'User is deleted successfully!'
     });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+// get matches reserved by the user
+module.exports.getMatches = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('matches');
+    res.status(200).json(user.matches);
   } catch (error) {
     res.status(500).json(error);
   }
