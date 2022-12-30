@@ -90,13 +90,23 @@ module.exports.cancelReservation = async (req, res) => {
       if (temp > 3) {
         return res.status(400).json({ message: 'You can not cancel the reservation after 3 days.' });
       }
+      //console.log(1);
       match.seatsStatus[row][seat] = 0;
       match.markModified('seatsStatus');
       await match.save();
+      //console.log(2);
       // remove match from the database of the user
-      const user = await User.findById(req.user._id);
-      user.matches.pull(match._id);
+      const user = await User.findById(req.user.id);
+      // pull the match from the user's matches array that have same row and seat
+      for (let i = 0; i < user.matches.length; i++) {
+        if (user.matches[i].firstTeam === match.firstTeam && user.matches[i].row === Number(row) && user.matches[i].seat === Number(seat) && user.matches[i].secondTeam === match.secondTeam && user.matches[i].matchVenue === match.matchVenue) {
+          //console.log("here");
+          user.matches.pull(user.matches[i]._id);
+          break;
+        }
+      }
       user.markModified('matches');
+      //console.log(4);
       await user.save();
       return res.status(200).json({ message: 'Seat is canceled successfully.' });
     } else {
