@@ -3,8 +3,18 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 module.exports.updateUser = async (req, res) => {
-  req.body.userName && res.status(400).json({ message: 'You cannot update the userName!' });
-  req.body.emailAddress && res.status(400).json({ message: 'You cannot update the emailAddress!' });
+  // cant update userName
+  if (req.body.userName) {
+    return res.status(400).json({
+      message: 'You can not update userName.'
+    });
+  }
+  // cant update emailAddress
+  if (req.body.emailAddress) {
+    return res.status(400).json({
+      message: 'You can not update emailAddress.'
+    });
+  }
   // validate the password
   if (req.body.password) {
     if (req.body.password.length < 6) {
@@ -15,6 +25,19 @@ module.exports.updateUser = async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, 10); // hash the password before saving
   }
   try {
+    // check if old password is correct
+    const user = await User.findById(req.params.id);
+    if (req.body.oldPassword) {
+      const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({
+          message: 'Old password is not correct.'
+        });
+      }}else{
+          return res.status(400).json({
+            message: 'You must enter old password to update the Data.'
+          });
+      }
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {

@@ -6,7 +6,7 @@ const { verifyTokenAndFan, verifyTokenAndManager, verifyTokenAndAdmin } = requir
 const router = express.Router();
 
 // PATCH => /api/users/:id
-router.patch('/:id', verifyTokenAndFan, updateUser);
+router.put('/:id', verifyTokenAndFan, updateUser);
 
 // GET => /api/users/unapproved
 router.get('/unapproved', verifyTokenAndAdmin, getUnApprovedManagers);
