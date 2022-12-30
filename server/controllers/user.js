@@ -25,19 +25,6 @@ module.exports.updateUser = async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, 10); // hash the password before saving
   }
   try {
-    // check if old password is correct
-    const user = await User.findById(req.params.id);
-    if (req.body.oldPassword) {
-      const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({
-          message: 'Old password is not correct.'
-        });
-      }}else{
-          return res.status(400).json({
-            message: 'You must enter old password to update the Data.'
-          });
-      }
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
