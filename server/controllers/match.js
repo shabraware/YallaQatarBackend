@@ -63,7 +63,7 @@ module.exports.reserveSeat = async (req, res) => {
       const user = await User.findById(req.user.id);
       //console.log(user);
       // update the user's matches array and row and column of the seat
-      user.matches.push({ matches: match._id, row, seat, firstTeam: match.firstTeam, secondTeam: match.secondTeam, matchVenue: match.matchVenue });
+      user.matches.push({ match: match._id, row, seat, firstTeam: match.firstTeam, secondTeam: match.secondTeam, matchVenue: match.matchVenue });
       await user.save();
       return res.status(200).json({ message: 'Seat is reserved successfully.', ticketNumber: match.seatsStatus[row][seat] });
     } else {

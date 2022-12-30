@@ -47,7 +47,8 @@ mongoose.connect(process.env.MONGO_URL)
     console.log(error);
   });
   
-  /*
+  
+/*
  mongoose.connect('mongodb://localhost:27017/football')
    .then(() => console.log('connected successfully'))
    .catch(err => console.log('could not connect....'));
