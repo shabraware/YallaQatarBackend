@@ -8,24 +8,24 @@ module.exports.addStadium = async (req, res) => {
       return res.status(400).json({ message: 'The stadium is already in the database.' });
     }
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 
   // Create a new stadium and save it in the database 
   const newStadium = new Stadium(req.body);
   try {
     const savedStadium = await newStadium.save();
-    res.status(200).json({ message: 'Stadium is created successfully.', stadium: savedStadium });
+    return res.status(200).json({ message: 'Stadium is created successfully.', stadium: savedStadium });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
 module.exports.getStadiums = async (req, res) => {
   try {
     const stadiums = await Stadium.find();
-    res.status(200).json(stadiums);
+    return res.status(200).json(stadiums);
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };

@@ -6,15 +6,16 @@ const User = require('../models/User');
 module.exports.register = (req, res, next) => {
   // Check if the username is already exist
   User.findOne({ userName: req.body.userName }).then(foundUser => {
-    console.log(foundUser);
-    foundUser && res.status(400).json({
-      message: 'Username is already exist.'
-    });
+    if (foundUser) {
+      return res.status(400).json({
+        message: 'Username is already exist.'
+      });
+    }
   });
   // Check if the email is already exist
   User.findOne({ emailAddress: req.body.emailAddress }).then(foundUser => {
     if (foundUser) {
-      res.status(400).json({
+      return res.status(400).json({
         message: 'Email is already exist.'
       });
     }
@@ -38,7 +39,7 @@ module.exports.register = (req, res, next) => {
     })
     .then(savedUser => {
       if (savedUser.role === 'manager') {
-        res.status(201).json({
+        return res.status(201).json({
           message: 'Manager is registered successfully. Please wait for the admin approval.',
           savedUser
         });
@@ -53,7 +54,7 @@ module.exports.register = (req, res, next) => {
           process.env.JWT_SECRET_KEY,
           {}
         );
-        res.status(201).json({
+        return res.status(201).json({
           message: 'Fan is registered successfully.',
           token,
           user
@@ -61,7 +62,7 @@ module.exports.register = (req, res, next) => {
       }
     })
     .catch(error => {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     });
 };
 
@@ -72,16 +73,20 @@ module.exports.login = (req, res, next) => {
   // Find the user by username
   User.findOne({ userName })
     .then(foundUser => {
-      !foundUser && res.status(400).json({
-        message: 'Username is not exist.'
-      });
+      if (!foundUser) {
+        return res.status(400).json({
+          message: 'Username is not exist.'
+        });
+      }
       user = foundUser;
       return bcrypt.compare(password, user.password);
     })
     .then(isEqual => {
-      !isEqual && res.status(400).json({
-        message: 'Password is not correct.'
-      });
+      if (!isEqual) {
+        return res.status(400).json({
+          message: 'Password is not correct.'
+        });
+      }
       // Generate the JWT token
       const token = jwt.sign(
         {
@@ -91,13 +96,13 @@ module.exports.login = (req, res, next) => {
         process.env.JWT_SECRET_KEY,
         {}
       );
-      res.status(200).json({
+      return res.status(200).json({
         message: 'User is logined successfully.',
         token,
         user
       });
     })
     .catch(error => {
-      // res.status(500).json(error);
+      return res.status(500).json(error);
     });
 };

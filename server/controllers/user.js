@@ -35,21 +35,21 @@ module.exports.updateUser = async (req, res) => {
       }
     );
     // updatedUser is the document after update because of new: true
-    res.status(200).json({
+    return res.status(200).json({
       message: 'User is updated successfully!',
       updatedUser
     });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
 module.exports.getUnApprovedManagers = async (req, res) => {
   try {
     const users = await User.find({ role: 'manager', approved: false });
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -59,7 +59,7 @@ module.exports.getUsers = async (req, res) => {
     const users = await User.find({ role: { $ne: 'admin' } });
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -67,7 +67,7 @@ module.exports.approveManager = async (req, res) => {
   // Check if the manager is already exist in the database
   const foundManager = await User.findById(req.params.id);
   if (!foundManager) {
-    res.status(400).json({
+    return res.status(400).json({
       message: 'Manager is not exist.'
     });
   }
@@ -79,23 +79,23 @@ module.exports.approveManager = async (req, res) => {
     }, {
       new: true
     });
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Manager is approved successfully!',
       manager: approvedManager
     });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
 module.exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({
+    return res.status(200).json({
       message: 'User is deleted successfully!'
     });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -103,8 +103,8 @@ module.exports.deleteUser = async (req, res) => {
 module.exports.getMatches = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('matches');
-    res.status(200).json(user.matches);
+    return res.status(200).json(user.matches);
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
